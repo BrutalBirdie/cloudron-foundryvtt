@@ -8,6 +8,14 @@ If you do not have a licence, this is nothing for you.
 
 > ⚠️ For copy-paste install like bellow you need the `jq` package.
 
+You can either build it your self or use the build images:
+
+```bash
+docker pull brutalbirdie/foundryvtt.cloudron.app
+```
+
+How to build it yourself?
+
 ## Get the release zip
 
 Go to <https://foundryvtt.com/> login with your credentials and download the configured version in the [Dockerfile Line 3 : VERSION](./Dockerfile).
