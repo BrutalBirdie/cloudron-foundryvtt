@@ -11,6 +11,7 @@
     - [Build](#build)
     - [Push](#push)
     - [Install](#install)
+    - [Update](#update)
 
 ## IMPORTANT
 
@@ -63,4 +64,14 @@ docker push dr.cloudron.dev/$(jq -r .id CloudronManifest.json):$(jq -r .version 
 
 ```bash
 cloudron install --location vtt --image dr.cloudron.dev/$(jq -r .id CloudronManifest.json):$(jq -r .version CloudronManifest.json)
+```
+
+### Update
+
+> [!NOTE]
+> To update the app, you need the [CloudronManifest.json](https://github.com/BrutalBirdie/cloudron-foundryvtt/blob/master/CloudronManifest.json)
+> Replace `$LOCATION` with either the app location or the app id
+
+```bash
+cloudron update --app $LOCATION --image brutalbirdie/foundryvtt.cloudron.app:1.0.0
 ```
