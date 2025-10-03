@@ -1,1 +1,8 @@
 *.zip
+node_modules/
+data/
+.users.json
+.idea
+npm-debug.log
+client/
+.DS_Store
