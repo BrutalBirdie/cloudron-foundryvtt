@@ -10,12 +10,12 @@
   "license": "ISC",
   "devDependencies": {
     "expect.js": "^0.3.1",
-    "mocha": "^11.7.3",
-    "selenium-server-standalone-jar": "^4.35.0",
-    "selenium-webdriver": "^4.35.0",
+    "mocha": "^11.7.5",
+    "selenium-server-standalone-jar": "^4.38.0",
+    "selenium-webdriver": "^4.38.0",
     "superagent": "^10.2.3"
   },
   "dependencies": {
-    "chromedriver": "^140.0.4"
+    "chromedriver": "^142.0.1"
   }
 }

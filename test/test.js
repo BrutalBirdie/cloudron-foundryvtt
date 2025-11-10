@@ -14,8 +14,9 @@ const execSync = require('child_process').execSync,
     { Builder, By, Key, until } = require('selenium-webdriver'),
     { Options } = require('selenium-webdriver/chrome');
 
-    const username = process.env.TEST_USERNAME || process.env.USERNAME;
+const username = process.env.TEST_USERNAME || process.env.USERNAME;
 const password = process.env.TEST_PASSWORD || process.env.PASSWORD;
+const SNAP = process.env.SNAP || false;
 
 if (!username || !password) {
     console.log('USERNAME and PASSWORD env vars need to be set');
@@ -34,6 +35,7 @@ describe('Application life cycle test', function () {
     before(function () {
         const chromeOptions = new Options().windowSize({ width: 1280, height: 1024 });
         if (process.env.CI) chromeOptions.addArguments('no-sandbox', 'disable-dev-shm-usage', 'headless');
+        if (process.env.SNAP) chromeOptions.addArguments('--no-sandbox', '--disable-dev-shm-usage', '--remote-debugging-port=9222');
         browser = new Builder().forBrowser('chrome').setChromeOptions(chromeOptions).build();
         if (!fs.existsSync('./screenshots')) fs.mkdirSync('./screenshots');
     });
@@ -64,15 +66,23 @@ describe('Application life cycle test', function () {
         expect(app).to.be.an('object');
     }
 
+    async function couldSubmitKey() {
+        await browser.get(`https://${app.fqdn}`);
+        await waitForElement(By.xpath(`//button/label[contains(text(), "Submit Key")]`));
+        await browser.findElement(By.xpath(`//button/label[contains(text(), "Submit Key")]`));
+    }
+
     xit('build app', () => { execSync('cloudron build', EXEC_ARGS); });
 
     it('install app', () => { execSync(`cloudron install --location ${LOCATION}`, EXEC_ARGS); });
 
     it('can get app information', getAppInfo);
+    it('Can see submit key button', couldSubmitKey);
 
     it('can restart app', () => { execSync(`cloudron restart --app ${app.id}`, EXEC_ARGS); });
+    it('Can see submit key button', couldSubmitKey);
 
-    it('backup app', () => { execSync(`cloudron backup create --app ${app.id}`, EXEC_ARGS); });
+    it('backup app', function () { execSync(`cloudron backup create --app ${app.id}`, EXEC_ARGS); });
     it('restore app', () => {
         const backups = JSON.parse(execSync('cloudron backup list --raw'));
         execSync('cloudron uninstall --app ' + app.id, EXEC_ARGS);
@@ -81,9 +91,11 @@ describe('Application life cycle test', function () {
         app = inspect.apps.filter(a => a.location === LOCATION)[0];
         execSync(`cloudron restore --backup ${backups[0].id} --app ${app.id}`, EXEC_ARGS);
     });
+    it('Can see submit key button', couldSubmitKey);
 
     it('move to different location', () => { execSync(`cloudron configure --location ${LOCATION}2 --app ${app.id}`, EXEC_ARGS); });
     it('can get app information', getAppInfo);
+    it('Can see submit key button', couldSubmitKey);
 
     it('uninstall app', () => { execSync(`cloudron uninstall --app ${app.id}`, EXEC_ARGS); });
 

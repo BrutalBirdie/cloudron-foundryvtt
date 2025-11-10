@@ -1,6 +1,7 @@
 FROM cloudron/base:5.0.0@sha256:04fd70dbd8ad6149c19de39e35718e024417c3e01dc9c6637eaf4a41ec4e596c
 
-ENV VERSION=13.348
+# renovate: datasource=custom depName=foundryvtt versioning=semver registryUrl=https://foundryvtt.com/releases/ extractVersion=href="/releases/(?<version>13\.[0-9A-Za-z.-]+)"
+ENV VERSION=13.350
 
 WORKDIR /app/code
 
