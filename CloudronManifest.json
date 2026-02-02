@@ -9,15 +9,15 @@
   "contactEmail": "support@cloudron.io",
   "forumUrl": "https://forum.cloudron.io/category/666/foundryvtt",
   "documentationUrl": "https://docs.cloudron.io/packages/foundryvtt/",
-  "upstreamVersion": "13.350",
-  "version": "0.1.0",
+  "upstreamVersion": "13.351",
+  "version": "0.1.1",
   "healthCheckPath": "/",
   "icon": "file://logo.png",
   "tags": [ "game", "multiplayer" ],
   "memoryLimit": 1342177280,
   "httpPort": 30000,
   "manifestVersion": 2,
-  "minBoxVersion": "8.0.0",
+  "minBoxVersion": "9.0.0",
   "addons": {
     "localstorage": {}
   }
