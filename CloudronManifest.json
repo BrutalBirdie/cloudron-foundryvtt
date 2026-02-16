@@ -21,5 +21,6 @@
   "minBoxVersion": "9.0.0",
   "addons": {
     "localstorage": {}
-  }
+  },
+  "stable": true
 }
