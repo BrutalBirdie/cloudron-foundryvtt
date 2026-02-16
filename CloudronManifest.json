@@ -2,24 +2,33 @@
   "id": "foundryvtt.cloudron.app",
   "title": "FoundryVTT",
   "author": "Elias Hackradt",
+  "packagerName": "Elias Hackradt",
+  "packagerUrl": "https://github.com/BrutalBirdie",
+  "mediaLinks": [
+      "https://r2.foundryvtt.com/website-uploads-public/screen/user_70/v13-stable-release-screenshot-2025-04-29.webp",
+      "https://r2.foundryvtt.com/website-uploads-public/asset/user_671/year-in-review-2025-banner-2025-05-26.webp",
+      "https://r2.foundryvtt.com/website-uploads-public/screen/user_1/homepage-exclusive-content-banner-2022-05-21.webp",
+      "https://r2.foundryvtt.com/website-uploads-public/screen/user_1/homepage-game-systems-banner-2022-05-21.webp"
+      ],
   "tagline": "A software that provides an innovative online role-playing experience",
   "changelog": "file://CHANGELOG.md",
-  "description": "file://DESCRIPTION.md",
+  "description": "Foundry Virtual Tabletop is a software that provides an innovative online role-playing experience. The software supports Windows, Mac, and Linux and allows you to self-host a game server that players connect to for free directly through a web browser. A one time purchase with no subscription fees or feature gating. As a self-hosted application, you have full control over your game experience and own your own data. We relentlessly innovate using modern web technologies to provide a powerful framework for users with a best-in-class API for developers. Website: <https://foundryvtt.com/>",
   "website": "https://foundryvtt.com/",
   "contactEmail": "support@cloudron.io",
   "forumUrl": "https://forum.cloudron.io/category/666/foundryvtt",
   "documentationUrl": "https://docs.cloudron.io/packages/foundryvtt/",
   "upstreamVersion": "13.351",
-  "version": "0.1.1",
-  "dockerImage": "brutalbirdie/foundryvtt.cloudron.app:0.1.1",
+  "version": "2.0.0",
+  "dockerImage": "brutalbirdie/foundryvtt.cloudron.app:2.0.0",
   "healthCheckPath": "/",
   "icon": "file://logo.png",
+  "iconUrl": "https://raw.githubusercontent.com/BrutalBirdie/cloudron-foundryvtt/refs/heads/master/logo.png",
   "tags": [ "game", "multiplayer" ],
   "memoryLimit": 1342177280,
   "httpPort": 30000,
   "manifestVersion": 2,
-  "minBoxVersion": "9.0.0",
+  "minBoxVersion": "9.1.0",
   "addons": {
-    "localstorage": {}
+      "localstorage": {}
   }
 }
