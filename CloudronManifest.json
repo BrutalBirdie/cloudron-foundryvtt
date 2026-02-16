@@ -11,6 +11,7 @@
   "documentationUrl": "https://docs.cloudron.io/packages/foundryvtt/",
   "upstreamVersion": "13.351",
   "version": "0.1.1",
+  "dockerImage": "brutalbirdie/foundryvtt.cloudron.app:0.1.1",
   "healthCheckPath": "/",
   "icon": "file://logo.png",
   "tags": [ "game", "multiplayer" ],
