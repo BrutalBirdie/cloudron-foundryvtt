@@ -7,3 +7,4 @@
 
 [2.0.1]
     * Update to Foundry VTT 14.359
+    * Update NodeJS to 24.14.1
