@@ -12,35 +12,87 @@ jobs:
       contents: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Get version from tag
+      - name: Get version info
         id: version
         run: |
           TAG="${GITHUB_REF#refs/tags/}"
-          # Strip leading 'v' if present (e.g. v1.0.1 -> 1.0.1)
-          VERSION="${TAG#v}"
-          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          # Strip leading 'v' if present (e.g. v2.0.1 -> 2.0.1)
+          TAG="${TAG#v}"
 
-      - name: Extract changelog for version
-        id: changelog
+          # Get VTT version from Dockerfile (ENV VERSION=14.359)
+          VTT_VERSION=$(grep '^ENV VERSION=' Dockerfile | cut -d= -f2)
+
+          # Get cloudron package version and docker image from manifest
+          PKG_VERSION=$(jq -r '.version' CloudronManifest.json)
+          DOCKER_IMAGE=$(jq -r '.dockerImage' CloudronManifest.json)
+          DOCKER_IMAGE_NAME="${DOCKER_IMAGE%%:*}"
+          DOCKER_TAG="${DOCKER_IMAGE##*:}"
+
+          # Get the previous git tag and extract its VTT version from its Dockerfile
+          PREV_TAG=$(git tag --sort=-version:refname | grep -v "^${TAG}$\|^v${TAG}$" | head -1)
+          PREV_VTT_VERSION=""
+          if [ -n "$PREV_TAG" ]; then
+            PREV_VTT_VERSION=$(git show "${PREV_TAG}:Dockerfile" | grep '^ENV VERSION=' | cut -d= -f2)
+          fi
+
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "vtt_version=$VTT_VERSION" >> "$GITHUB_OUTPUT"
+          echo "pkg_version=$PKG_VERSION" >> "$GITHUB_OUTPUT"
+          echo "docker_image_name=$DOCKER_IMAGE_NAME" >> "$GITHUB_OUTPUT"
+          echo "docker_tag=$DOCKER_TAG" >> "$GITHUB_OUTPUT"
+          echo "prev_vtt_version=$PREV_VTT_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Get Docker image digest
+        id: docker
         run: |
-          VERSION="${{ steps.version.outputs.version }}"
-          # Extract from "## [VERSION]" up to (but not including) the next "## ["
-          awk '
-            /^## \['"$VERSION"'\]/ { found=1; print; next }
-            found { if (/^## \[/) exit; print }
-          ' CHANGELOG.md > release_notes.md
-          echo "---"
+          IMAGE_NAME="${{ steps.version.outputs.docker_image_name }}"
+          DOCKER_TAG="${{ steps.version.outputs.docker_tag }}"
+          DIGEST=$(curl -s "https://hub.docker.com/v2/repositories/${IMAGE_NAME}/tags/${DOCKER_TAG}" \
+            | jq -r '.digest // ""')
+          echo "digest=$DIGEST" >> "$GITHUB_OUTPUT"
+
+      - name: Build release notes
+        run: |
+          VTT_VERSION="${{ steps.version.outputs.vtt_version }}"
+          PREV_VTT_VERSION="${{ steps.version.outputs.prev_vtt_version }}"
+          PKG_VERSION="${{ steps.version.outputs.pkg_version }}"
+          DOCKER_IMAGE_NAME="${{ steps.version.outputs.docker_image_name }}"
+          DOCKER_TAG="${{ steps.version.outputs.docker_tag }}"
+          DIGEST="${{ steps.docker.outputs.digest }}"
+
+          # Extract changelog entries for this package version
+          # CHANGELOG.md format: "[VERSION]" header followed by "    * ..." lines
+          CHANGELOG=$(awk -v ver="$PKG_VERSION" '
+            $0 == "[" ver "]" { found=1; next }
+            found && /^\[/ { exit }
+            found { print }
+          ' CHANGELOG.md)
+
+          {
+            echo "# FoundryVTT ${VTT_VERSION}"
+            echo ""
+            echo "## Changelog"
+            echo "$CHANGELOG"
+            echo ""
+            echo "## Full Changelog"
+            if [ -n "$PREV_VTT_VERSION" ]; then
+              echo "https://github.com/${GITHUB_REPOSITORY}/compare/${PREV_VTT_VERSION}...${VTT_VERSION}"
+            else
+              echo "https://github.com/${GITHUB_REPOSITORY}/releases"
+            fi
+            echo ""
+            echo "## Docker Image"
+            echo ""
+            echo "https://hub.docker.com/repository/docker/${DOCKER_IMAGE_NAME}/tags/${DOCKER_TAG}/${DIGEST}"
+          } > release_notes.md
+
+          echo "--- release_notes.md ---"
           cat release_notes.md
           echo "---"
-          # Default body if section missing (e.g. typo in tag)
-          if [ ! -s release_notes.md ]; then
-            echo "Release ${{ steps.version.outputs.tag }}" > release_notes.md
-          fi
 
       - name: Create draft release
         uses: softprops/action-gh-release@v2
